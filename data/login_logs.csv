@@ -1,0 +1,16 @@
+log_id,user_email,login_time,location,device,previous_location,time_gap_hours,label
+1,john@company.com,2024-01-15 09:00:00,Mumbai,Windows-PC,Mumbai,8,normal
+2,jane@company.com,2024-01-15 10:30:00,Delhi,MacBook,Delhi,9,normal
+3,john@company.com,2024-01-15 11:00:00,Russia,Unknown-Device,Mumbai,2,anomaly
+4,jane@company.com,2024-01-16 03:00:00,China,Unknown-Device,Delhi,1,anomaly
+5,bob@company.com,2024-01-15 08:00:00,Mumbai,Windows-PC,Mumbai,10,normal
+6,bob@company.com,2024-01-15 23:00:00,USA,iPhone,Mumbai,15,anomaly
+7,alice@company.com,2024-01-15 09:30:00,Chennai,MacBook,Chennai,8,normal
+8,alice@company.com,2024-01-15 14:00:00,Chennai,MacBook,Chennai,5,normal
+9,mark@company.com,2024-01-15 07:00:00,Bangalore,Windows-PC,Bangalore,9,normal
+10,mark@company.com,2024-01-15 09:30:00,UK,Unknown-Device,Bangalore,2,anomaly
+11,sara@company.com,2024-01-15 10:00:00,Hyderabad,MacBook,Hyderabad,8,normal
+12,sara@company.com,2024-01-15 11:00:00,Hyderabad,MacBook,Hyderabad,1,normal
+13,raj@company.com,2024-01-15 08:30:00,Mumbai,Windows-PC,Mumbai,9,normal
+14,raj@company.com,2024-01-15 10:00:00,Germany,Unknown-Device,Mumbai,1,anomaly
+15,priya@company.com,2024-01-15 09:00:00,Delhi,iPhone,Delhi,8,normal

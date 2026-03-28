@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BEC Shield — Business Email Compromise Detection</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <!-- Animated background grid -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="bg-glow glow-3"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="logo-text">
+          <span class="logo-main">BEC</span>
+          <span class="logo-sub">SHIELD</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-section="dashboard">
+          <i class="fa-solid fa-gauge-high"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-section="emails">
+          <i class="fa-solid fa-envelope-open-text"></i>
+          <span>Email Analysis</span>
+          <span class="nav-badge danger">3</span>
+        </a>
+        <a href="#" class="nav-item" data-section="sandbox">
+          <i class="fa-solid fa-bug-slash"></i>
+          <span>Link Sandbox</span>
+        </a>
+        <a href="#" class="nav-item" data-section="login">
+          <i class="fa-solid fa-user-shield"></i>
+          <span>Login Behavior</span>
+          <span class="nav-badge warning">2</span>
+        </a>
+        <a href="#" class="nav-item" data-section="alerts">
+          <i class="fa-solid fa-bell"></i>
+          <span>Alerts</span>
+          <span class="nav-badge danger">5</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-status">
+        <div class="status-dot pulse"></div>
+        <span>System Active</span>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <!-- TOP BAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="page-title" id="page-title">Overview Dashboard</h1>
+          <p class="page-sub" id="page-sub">
+            Real-time threat monitoring & email compromise detection
+          </p>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-time" id="live-time"></div>
+          <div class="topbar-threat">
+            <span class="threat-label">Threat Level</span>
+            <span class="threat-value high">HIGH</span>
+          </div>
+          <div class="topbar-avatar">
+            <i class="fa-solid fa-user-tie"></i>
+            <span>Admin</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ===== SECTION: DASHBOARD ===== -->
+      <section class="section active" id="section-dashboard">
+        <!-- STAT CARDS -->
+        <div class="stats-grid">
+          <div class="stat-card" data-color="danger">
+            <div class="stat-icon">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value counter" data-target="12">0</div>
+              <div class="stat-label">High Risk Emails</div>
+            </div>
+            <div class="stat-trend up">
+              <i class="fa-solid fa-arrow-trend-up"></i> +3 today
+            </div>
+          </div>
+          <div class="stat-card" data-color="warning">
+            <div class="stat-icon">
+              <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value counter" data-target="27">0</div>
+              <div class="stat-label">Medium Risk Emails</div>
+            </div>
+            <div class="stat-trend up">
+              <i class="fa-solid fa-arrow-trend-up"></i> +7 today
+            </div>
+          </div>
+          <div class="stat-card" data-color="success">
+            <div class="stat-icon">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value counter" data-target="184">0</div>
+              <div class="stat-label">Safe Emails</div>
+            </div>
+            <div class="stat-trend down">
+              <i class="fa-solid fa-arrow-trend-down"></i> normal
+            </div>
+          </div>
+          <div class="stat-card" data-color="info">
+            <div class="stat-icon"><i class="fa-solid fa-user-xmark"></i></div>
+            <div class="stat-info">
+              <div class="stat-value counter" data-target="4">0</div>
+              <div class="stat-label">Login Anomalies</div>
+            </div>
+            <div class="stat-trend up">
+              <i class="fa-solid fa-arrow-trend-up"></i> +2 today
+            </div>
+          </div>
+        </div>
+
+        <!-- CHARTS ROW -->
+        <div class="charts-row">
+          <!-- Risk Distribution -->
+          <div class="chart-card wide">
+            <div class="chart-header">
+              <h3>
+                Email Risk Distribution
+                <span class="chart-period">Last 7 Days</span>
+              </h3>
+            </div>
+            <div class="bar-chart-wrap">
+              <div class="bar-chart">
+                <div class="bar-group">
+                  <div class="bar-stack">
+                    <div class="bar high" style="height: 30%"></div>
+                    <div class="bar medium" style="height: 25%"></div>
+                    <div class="bar safe" style="height: 45%"></div>
+                  </div>
+                  <span>Mon</span>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-stack">
+                    <div class="bar high" style="height: 20%"></div>
+                    <div class="bar medium" style="height: 35%"></div>
+                    <div class="bar safe" style="height: 45%"></div>
+                  </div>
+                  <span>Tue</span>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-stack">
+                    <div class="bar high" style="height: 40%"></div>
+                    <div class="bar medium" style="height: 20%"></div>
+                    <div class="bar safe" style="height: 40%"></div>
+                  </div>
+                  <span>Wed</span>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-stack">
+                    <div class="bar high" style="height: 15%"></div>
+                    <div class="bar medium" style="height: 30%"></div>
+                    <div class="bar safe" style="height: 55%"></div>
+                  </div>
+                  <span>Thu</span>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-stack">
+                    <div class="bar high" style="height: 50%"></div>
+                    <div class="bar medium" style="height: 25%"></div>
+                    <div class="bar safe" style="height: 25%"></div>
+                  </div>
+                  <span>Fri</span>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-stack">
+                    <div class="bar high" style="height: 10%"></div>
+                    <div class="bar medium" style="height: 20%"></div>
+                    <div class="bar safe" style="height: 70%"></div>
+                  </div>
+                  <span>Sat</span>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-stack">
+                    <div class="bar high" style="height: 35%"></div>
+                    <div class="bar medium" style="height: 30%"></div>
+                    <div class="bar safe" style="height: 35%"></div>
+                  </div>
+                  <span>Sun</span>
+                </div>
+              </div>
+              <div class="bar-legend">
+                <span class="leg high">High Risk</span>
+                <span class="leg medium">Medium Risk</span>
+                <span class="leg safe">Safe</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Donut Chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Threat Breakdown</h3>
+            </div>
+            <div class="donut-wrap">
+              <svg viewBox="0 0 120 120" class="donut-svg">
+                <circle class="donut-bg" cx="60" cy="60" r="45" />
+                <circle
+                  class="donut-seg safe"
+                  cx="60"
+                  cy="60"
+                  r="45"
+                  stroke-dasharray="127 155"
+                  stroke-dashoffset="0"
+                />
+                <circle
+                  class="donut-seg medium"
+                  cx="60"
+                  cy="60"
+                  r="45"
+                  stroke-dasharray="61 221"
+                  stroke-dashoffset="-127"
+                />
+                <circle
+                  class="donut-seg danger"
+                  cx="60"
+                  cy="60"
+                  r="45"
+                  stroke-dasharray="95 187"
+                  stroke-dashoffset="-188"
+                />
+              </svg>
+              <div class="donut-center">
+                <span class="donut-total">223</span>
+                <span class="donut-label">Total</span>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="dl-item">
+                <span class="dl-dot safe"></span> Safe <strong>184</strong>
+              </div>
+              <div class="dl-item">
+                <span class="dl-dot medium"></span> Medium <strong>27</strong>
+              </div>
+              <div class="dl-item">
+                <span class="dl-dot danger"></span> High <strong>12</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LIVE FEED -->
+        <div class="live-feed-card">
+          <div class="lf-header">
+            <h3><span class="pulse-dot"></span> Live Threat Feed</h3>
+            <span class="lf-count">Latest activity</span>
+          </div>
+          <div class="lf-list" id="live-feed">
+            <div class="lf-item high">
+              <div class="lf-icon">
+                <i class="fa-solid fa-skull-crossbones"></i>
+              </div>
+              <div class="lf-content">
+                <strong>HIGH RISK</strong> — Email from
+                <code>ceo@fakebank.net</code> quarantined
+                <span class="lf-time">2 min ago</span>
+              </div>
+              <span class="lf-badge high">Quarantined</span>
+            </div>
+            <div class="lf-item warning">
+              <div class="lf-icon"><i class="fa-solid fa-user-slash"></i></div>
+              <div class="lf-content">
+                <strong>LOGIN ANOMALY</strong> —
+                <code>john@company.com</code> logged in from Russia
+                <span class="lf-time">5 min ago</span>
+              </div>
+              <span class="lf-badge warning">Alert Sent</span>
+            </div>
+            <div class="lf-item medium">
+              <div class="lf-icon"><i class="fa-solid fa-link-slash"></i></div>
+              <div class="lf-content">
+                <strong>MEDIUM RISK</strong> — Suspicious link detected in email
+                from <code>deals@promo.net</code>
+                <span class="lf-time">12 min ago</span>
+              </div>
+              <span class="lf-badge medium">Warning Sent</span>
+            </div>
+            <div class="lf-item safe">
+              <div class="lf-icon">
+                <i class="fa-solid fa-check-double"></i>
+              </div>
+              <div class="lf-content">
+                <strong>SAFE</strong> — Email from
+                <code>hr@company.com</code> cleared all checks
+                <span class="lf-time">18 min ago</span>
+              </div>
+              <span class="lf-badge safe">Delivered</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION: EMAIL ANALYSIS ===== -->
+      <section class="section" id="section-emails">
+        <div class="section-toolbar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="text"
+              placeholder="Search emails, senders..."
+              id="email-search"
+            />
+          </div>
+          <div class="filter-group">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="high">High Risk</button>
+            <button class="filter-btn" data-filter="medium">Medium</button>
+            <button class="filter-btn" data-filter="safe">Safe</button>
+          </div>
+        </div>
+
+        <div class="email-table-wrap">
+          <table class="email-table">
+            <thead>
+              <tr>
+                <th>Sender</th>
+                <th>Subject</th>
+                <th>Has Link</th>
+                <th>Risk Score</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="email-tbody">
+              <tr data-risk="high">
+                <td><code>ceo@fakebank.net</code></td>
+                <td>Urgent: Wire Transfer Required</td>
+                <td><span class="tag no">No</span></td>
+                <td>
+                  <div class="score-bar">
+                    <div class="score-fill high" style="width: 92%"></div>
+                    <span>92</span>
+                  </div>
+                </td>
+                <td><span class="badge high">High Risk</span></td>
+                <td>
+                  <button
+                    class="action-btn view"
+                    onclick="
+                      openEmailModal(
+                        'ceo@fakebank.net',
+                        'Urgent: Wire Transfer Required',
+                        'Your CEO is requesting an immediate wire transfer of $75,000 to a new vendor account. Act now or face consequences.',
+                        'No',
+                        '92',
+                        'High',
+                      )
+                    "
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+              <tr data-risk="high">
+                <td><code>support@paypa1.com</code></td>
+                <td>Password Reset Required</td>
+                <td><span class="tag yes">Yes</span></td>
+                <td>
+                  <div class="score-bar">
+                    <div class="score-fill high" style="width: 88%"></div>
+                    <span>88</span>
+                  </div>
+                </td>
+                <td><span class="badge high">High Risk</span></td>
+                <td>
+                  <button
+                    class="action-btn view"
+                    onclick="
+                      openEmailModal(
+                        'support@paypa1.com',
+                        'Password Reset Required',
+                        'Click here to reset your password: http://malicious-site.com/verify',
+                        'Yes',
+                        '88',
+                        'High',
+                      )
+                    "
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+              <tr data-risk="high">
+                <td><code>alerts@phish.xyz</code></td>
+                <td>Account Verification Needed</td>
+                <td><span class="tag yes">Yes</span></td>
+                <td>
+                  <div class="score-bar">
+                    <div class="score-fill high" style="width: 95%"></div>
+                    <span>95</span>
+                  </div>
+                </td>
+                <td><span class="badge high">High Risk</span></td>
+                <td>
+                  <button
+                    class="action-btn view"
+                    onclick="
+                      openEmailModal(
+                        'alerts@phish.xyz',
+                        'Account Verification Needed',
+                        'Your account will be suspended. Verify now at http://fakebank.net/login',
+                        'Yes',
+                        '95',
+                        'High',
+                      )
+                    "
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+              <tr data-risk="medium">
+                <td><code>deals@promosite.com</code></td>
+                <td>Exclusive Weekend Offer</td>
+                <td><span class="tag yes">Yes</span></td>
+                <td>
+                  <div class="score-bar">
+                    <div class="score-fill medium" style="width: 55%"></div>
+                    <span>55</span>
+                  </div>
+                </td>
+                <td><span class="badge medium">Medium</span></td>
+                <td>
+                  <button
+                    class="action-btn view"
+                    onclick="
+                      openEmailModal(
+                        'deals@promosite.com',
+                        'Exclusive Weekend Offer',
+                        'Check out our exclusive weekend deals at http://suspicious-link.net/sale',
+                        'Yes',
+                        '55',
+                        'Medium',
+                      )
+                    "
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+              <tr data-risk="medium">
+                <td><code>info@alerts-now.com</code></td>
+                <td>Security Notice</td>
+                <td><span class="tag no">No</span></td>
+                <td>
+                  <div class="score-bar">
+                    <div class="score-fill medium" style="width: 48%"></div>
+                    <span>48</span>
+                  </div>
+                </td>
+                <td><span class="badge medium">Medium</span></td>
+                <td>
+                  <button
+                    class="action-btn view"
+                    onclick="
+                      openEmailModal(
+                        'info@alerts-now.com',
+                        'Security Notice',
+                        'We have detected some unusual activity on your account. Please review.',
+                        'No',
+                        '48',
+                        'Medium',
+                      )
+                    "
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+              <tr data-risk="safe">
+                <td><code>hr@company.com</code></td>
+                <td>Team Meeting Tomorrow</td>
+                <td><span class="tag no">No</span></td>
+                <td>
+                  <div class="score-bar">
+                    <div class="score-fill safe" style="width: 8%"></div>
+                    <span>8</span>
+                  </div>
+                </td>
+                <td><span class="badge safe">Safe</span></td>
+                <td>
+                  <button
+                    class="action-btn view"
+                    onclick="
+                      openEmailModal(
+                        'hr@company.com',
+                        'Team Meeting Tomorrow',
+                        'Please join us for the team meeting tomorrow at 10 AM in Conference Room B.',
+                        'No',
+                        '8',
+                        'Safe',
+                      )
+                    "
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+              <tr data-risk="safe">
+                <td><code>ceo@legitcompany.com</code></td>
+                <td>Q3 Report Attached</td>
+                <td><span class="tag no">No</span></td>
+                <td>
+                  <div class="score-bar">
+                    <div class="score-fill safe" style="width: 5%"></div>
+                    <span>5</span>
+                  </div>
+                </td>
+                <td><span class="badge safe">Safe</span></td>
+                <td>
+                  <button
+                    class="action-btn view"
+                    onclick="
+                      openEmailModal(
+                        'ceo@legitcompany.com',
+                        'Q3 Report Attached',
+                        'Please find the attached Q3 financial report for your review.',
+                        'No',
+                        '5',
+                        'Safe',
+                      )
+                    "
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== SECTION: SANDBOX ===== -->
+      <section class="section" id="section-sandbox">
+        <div class="sandbox-grid">
+          <div class="sandbox-input-card">
+            <h3><i class="fa-solid fa-flask"></i> Link Sandbox Analyzer</h3>
+            <p>
+              Paste any suspicious URL to analyze it in an isolated sandbox
+              environment.
+            </p>
+            <div class="sandbox-input-wrap">
+              <input
+                type="text"
+                id="sandbox-url"
+                placeholder="https://suspicious-site.com/verify"
+                class="sandbox-input"
+              />
+              <button class="sandbox-btn" onclick="runSandbox()">
+                <i class="fa-solid fa-play"></i> Analyze
+              </button>
+            </div>
+            <div
+              class="sandbox-result"
+              id="sandbox-result"
+              style="display: none"
+            ></div>
+          </div>
+
+          <div class="sandbox-history-card">
+            <h3>Recent Sandbox Results</h3>
+            <div class="sandbox-list">
+              <div class="sb-item high">
+                <div class="sb-url">
+                  <i class="fa-solid fa-link"></i>
+                  http://malicious-site.com/verify
+                </div>
+                <div class="sb-details">
+                  <span>Redirects: 3</span>
+                  <span>Malware: Detected</span>
+                  <span>Domain Age: 2 days</span>
+                </div>
+                <span class="badge high">Malicious</span>
+              </div>
+              <div class="sb-item high">
+                <div class="sb-url">
+                  <i class="fa-solid fa-link"></i> http://fakebank.net/login
+                </div>
+                <div class="sb-details">
+                  <span>Redirects: 5</span>
+                  <span>Credential Harvesting: Yes</span>
+                  <span>Domain Age: 1 day</span>
+                </div>
+                <span class="badge high">Malicious</span>
+              </div>
+              <div class="sb-item medium">
+                <div class="sb-url">
+                  <i class="fa-solid fa-link"></i>
+                  http://suspicious-link.net/sale
+                </div>
+                <div class="sb-details">
+                  <span>Redirects: 1</span>
+                  <span>Suspicious Scripts: Yes</span>
+                  <span>Domain Age: 15 days</span>
+                </div>
+                <span class="badge medium">Suspicious</span>
+              </div>
+              <div class="sb-item safe">
+                <div class="sb-url">
+                  <i class="fa-solid fa-link"></i> http://amazon.com/orders
+                </div>
+                <div class="sb-details">
+                  <span>Redirects: 0</span>
+                  <span>Malware: None</span>
+                  <span>Domain Age: 10+ years</span>
+                </div>
+                <span class="badge safe">Safe</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Risk Score Breakdown -->
+        <div class="risk-breakdown-card">
+          <h3>Risk Score Calculation Engine</h3>
+          <div class="risk-factors">
+            <div class="rf-item">
+              <div class="rf-label">
+                <i class="fa-solid fa-key"></i> Suspicious Keywords
+              </div>
+              <div class="rf-bar-wrap">
+                <div
+                  class="rf-bar"
+                  style="width: 70%; background: var(--danger)"
+                ></div>
+              </div>
+              <span class="rf-score">+35</span>
+            </div>
+            <div class="rf-item">
+              <div class="rf-label">
+                <i class="fa-solid fa-bug"></i> Sandbox Malicious Link
+              </div>
+              <div class="rf-bar-wrap">
+                <div
+                  class="rf-bar"
+                  style="width: 100%; background: var(--danger)"
+                ></div>
+              </div>
+              <span class="rf-score">+50</span>
+            </div>
+            <div class="rf-item">
+              <div class="rf-label">
+                <i class="fa-solid fa-user-secret"></i> Sender Anomaly
+              </div>
+              <div class="rf-bar-wrap">
+                <div
+                  class="rf-bar"
+                  style="width: 60%; background: var(--warning)"
+                ></div>
+              </div>
+              <span class="rf-score">+30</span>
+            </div>
+            <div class="rf-item">
+              <div class="rf-label">
+                <i class="fa-solid fa-at"></i> Domain Spoofing
+              </div>
+              <div class="rf-bar-wrap">
+                <div
+                  class="rf-bar"
+                  style="width: 40%; background: var(--warning)"
+                ></div>
+              </div>
+              <span class="rf-score">+20</span>
+            </div>
+          </div>
+          <div class="risk-total">
+            <span>Total Risk Score</span>
+            <span class="risk-total-val danger">135 / 150 — HIGH RISK</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION: LOGIN BEHAVIOR ===== -->
+      <section class="section" id="section-login">
+        <div class="login-grid">
+          <div class="login-map-card">
+            <h3>
+              <i class="fa-solid fa-earth-asia"></i> Login Location Monitor
+            </h3>
+            <div class="world-map">
+              <div class="map-bg">
+                <svg viewBox="0 0 800 400" class="map-svg">
+                  <!-- Simplified world map outline -->
+                  <ellipse
+                    cx="400"
+                    cy="200"
+                    rx="380"
+                    ry="180"
+                    fill="none"
+                    stroke="var(--border)"
+                    stroke-width="1"
+                    opacity="0.3"
+                  />
+                  <!-- Grid lines -->
+                  <line
+                    x1="0"
+                    y1="200"
+                    x2="800"
+                    y2="200"
+                    stroke="var(--border)"
+                    stroke-width="0.5"
+                    opacity="0.3"
+                  />
+                  <line
+                    x1="400"
+                    y1="0"
+                    x2="400"
+                    y2="400"
+                    stroke="var(--border)"
+                    stroke-width="0.5"
+                    opacity="0.3"
+                  />
+                  <line
+                    x1="0"
+                    y1="100"
+                    x2="800"
+                    y2="100"
+                    stroke="var(--border)"
+                    stroke-width="0.5"
+                    opacity="0.2"
+                  />
+                  <line
+                    x1="0"
+                    y1="300"
+                    x2="800"
+                    y2="300"
+                    stroke="var(--border)"
+                    stroke-width="0.5"
+                    opacity="0.2"
+                  />
+                  <line
+                    x1="200"
+                    y1="0"
+                    x2="200"
+                    y2="400"
+                    stroke="var(--border)"
+                    stroke-width="0.5"
+                    opacity="0.2"
+                  />
+                  <line
+                    x1="600"
+                    y1="0"
+                    x2="600"
+                    y2="400"
+                    stroke="var(--border)"
+                    stroke-width="0.5"
+                    opacity="0.2"
+                  />
+                  <!-- Normal login dots -->
+                  <circle
+                    cx="530"
+                    cy="210"
+                    r="6"
+                    fill="var(--success)"
+                    opacity="0.8"
+                    class="map-dot pulse-dot-map"
+                  />
+                  <text
+                    x="540"
+                    y="215"
+                    fill="var(--success)"
+                    font-size="10"
+                    font-family="DM Mono"
+                  >
+                    Mumbai
+                  </text>
+                  <circle
+                    cx="490"
+                    cy="190"
+                    r="5"
+                    fill="var(--success)"
+                    opacity="0.8"
+                  />
+                  <text
+                    x="500"
+                    y="195"
+                    fill="var(--success)"
+                    font-size="10"
+                    font-family="DM Mono"
+                  >
+                    Delhi
+                  </text>
+                  <!-- Anomaly dots -->
+                  <circle
+                    cx="560"
+                    cy="130"
+                    r="8"
+                    fill="var(--danger)"
+                    opacity="0.9"
+                    class="map-dot blink"
+                  />
+                  <text
+                    x="570"
+                    y="135"
+                    fill="var(--danger)"
+                    font-size="10"
+                    font-family="DM Mono"
+                  >
+                    Russia ⚠
+                  </text>
+                  <circle
+                    cx="640"
+                    cy="175"
+                    r="8"
+                    fill="var(--danger)"
+                    opacity="0.9"
+                    class="map-dot blink"
+                  />
+                  <text
+                    x="650"
+                    y="180"
+                    fill="var(--danger)"
+                    font-size="10"
+                    font-family="DM Mono"
+                  >
+                    China ⚠
+                  </text>
+                  <circle
+                    cx="270"
+                    cy="160"
+                    r="7"
+                    fill="var(--warning)"
+                    opacity="0.9"
+                  />
+                  <text
+                    x="280"
+                    y="165"
+                    fill="var(--warning)"
+                    font-size="10"
+                    font-family="DM Mono"
+                  >
+                    USA ~
+                  </text>
+                  <circle
+                    cx="430"
+                    cy="140"
+                    r="6"
+                    fill="var(--warning)"
+                    opacity="0.9"
+                  />
+                  <text
+                    x="440"
+                    y="145"
+                    fill="var(--warning)"
+                    font-size="10"
+                    font-family="DM Mono"
+                  >
+                    UK ~
+                  </text>
+                </svg>
+              </div>
+              <div class="map-legend">
+                <span
+                  ><i
+                    class="fa-solid fa-circle"
+                    style="color: var(--success)"
+                  ></i>
+                  Normal</span
+                >
+                <span
+                  ><i
+                    class="fa-solid fa-circle"
+                    style="color: var(--warning)"
+                  ></i>
+                  Suspicious</span
+                >
+                <span
+                  ><i
+                    class="fa-solid fa-circle"
+                    style="color: var(--danger)"
+                  ></i>
+                  Anomaly</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="login-anomaly-card">
+            <h3>
+              <i class="fa-solid fa-chart-line"></i> Anomaly Detection Log
+            </h3>
+            <div class="anomaly-list">
+              <div class="anomaly-item high">
+                <div class="anomaly-icon">
+                  <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div class="anomaly-info">
+                  <strong>john@company.com</strong>
+                  <span>Mumbai → Russia in 2 hrs</span>
+                  <div class="anomaly-meta">
+                    <span><i class="fa-solid fa-clock"></i> 11:00 AM</span>
+                    <span
+                      ><i class="fa-solid fa-desktop"></i> Unknown Device</span
+                    >
+                  </div>
+                </div>
+                <span class="badge high">Blocked</span>
+              </div>
+              <div class="anomaly-item high">
+                <div class="anomaly-icon">
+                  <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div class="anomaly-info">
+                  <strong>jane@company.com</strong>
+                  <span>Delhi → China at 3:00 AM</span>
+                  <div class="anomaly-meta">
+                    <span><i class="fa-solid fa-clock"></i> 03:00 AM</span>
+                    <span
+                      ><i class="fa-solid fa-desktop"></i> Unknown Device</span
+                    >
+                  </div>
+                </div>
+                <span class="badge high">Blocked</span>
+              </div>
+              <div class="anomaly-item warning">
+                <div class="anomaly-icon">
+                  <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div class="anomaly-info">
+                  <strong>bob@company.com</strong>
+                  <span>Mumbai → USA in 15 hrs</span>
+                  <div class="anomaly-meta">
+                    <span><i class="fa-solid fa-clock"></i> 11:00 PM</span>
+                    <span><i class="fa-solid fa-mobile"></i> iPhone</span>
+                  </div>
+                </div>
+                <span class="badge warning">Flagged</span>
+              </div>
+              <div class="anomaly-item warning">
+                <div class="anomaly-icon">
+                  <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div class="anomaly-info">
+                  <strong>mark@company.com</strong>
+                  <span>Bangalore → UK in 2 hrs</span>
+                  <div class="anomaly-meta">
+                    <span><i class="fa-solid fa-clock"></i> 09:30 AM</span>
+                    <span
+                      ><i class="fa-solid fa-desktop"></i> Unknown Device</span
+                    >
+                  </div>
+                </div>
+                <span class="badge warning">Flagged</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Behavior Timeline -->
+        <div class="timeline-card">
+          <h3>
+            <i class="fa-solid fa-timeline"></i> User Behavior Timeline —
+            john@company.com
+          </h3>
+          <div class="timeline">
+            <div class="tl-item normal">
+              <div class="tl-dot normal"></div>
+              <div class="tl-content">
+                <strong>09:00 AM</strong> — Normal login from Mumbai, Windows-PC
+                <span class="tl-tag safe">Normal</span>
+              </div>
+            </div>
+            <div class="tl-item anomaly">
+              <div class="tl-dot anomaly"></div>
+              <div class="tl-content">
+                <strong>11:00 AM</strong> — Login attempt from Russia, Unknown
+                Device <em>(2hrs gap!)</em>
+                <span class="tl-tag high">Anomaly Detected</span>
+              </div>
+            </div>
+            <div class="tl-item action">
+              <div class="tl-dot action"></div>
+              <div class="tl-content">
+                <strong>11:01 AM</strong> — Alert generated, Admin notified,
+                Session blocked
+                <span class="tl-tag warning">Action Taken</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION: ALERTS ===== -->
+      <section class="section" id="section-alerts">
+        <div class="alerts-header-row">
+          <div class="alert-summary">
+            <div class="as-item high">
+              <span class="as-num">3</span><span>Critical</span>
+            </div>
+            <div class="as-item warning">
+              <span class="as-num">2</span><span>Warning</span>
+            </div>
+            <div class="as-item info">
+              <span class="as-num">5</span><span>Total</span>
+            </div>
+          </div>
+          <button class="clear-btn" onclick="clearAlerts()">
+            <i class="fa-solid fa-trash"></i> Clear All
+          </button>
+        </div>
+
+        <div class="alerts-list" id="alerts-list">
+          <div class="alert-card high">
+            <div class="alert-icon">
+              <i class="fa-solid fa-skull-crossbones"></i>
+            </div>
+            <div class="alert-body">
+              <div class="alert-title">Email Quarantined — HIGH RISK</div>
+              <div class="alert-desc">
+                Email from <code>ceo@fakebank.net</code> with score 92 has been
+                quarantined. Receiver and Admin notified.
+              </div>
+              <div class="alert-meta">
+                <i class="fa-solid fa-clock"></i> 2 minutes ago &nbsp;|&nbsp;
+                <i class="fa-solid fa-envelope"></i> john@company.com
+              </div>
+            </div>
+            <button class="dismiss-btn" onclick="dismissAlert(this)">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="alert-card high">
+            <div class="alert-icon"><i class="fa-solid fa-user-slash"></i></div>
+            <div class="alert-body">
+              <div class="alert-title">
+                Login Anomaly Detected — Account Compromise Risk
+              </div>
+              <div class="alert-desc">
+                <code>john@company.com</code> login from Russia detected. Time
+                gap: 2 hrs from Mumbai. Session blocked.
+              </div>
+              <div class="alert-meta">
+                <i class="fa-solid fa-clock"></i> 5 minutes ago &nbsp;|&nbsp;
+                <i class="fa-solid fa-location-dot"></i> Russia
+              </div>
+            </div>
+            <button class="dismiss-btn" onclick="dismissAlert(this)">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="alert-card high">
+            <div class="alert-icon"><i class="fa-solid fa-bug"></i></div>
+            <div class="alert-body">
+              <div class="alert-title">Malicious Link Detected in Sandbox</div>
+              <div class="alert-desc">
+                URL <code>http://malicious-site.com/verify</code> found to
+                contain credential harvesting scripts. Email quarantined.
+              </div>
+              <div class="alert-meta">
+                <i class="fa-solid fa-clock"></i> 8 minutes ago &nbsp;|&nbsp;
+                <i class="fa-solid fa-link"></i> Sandbox Result
+              </div>
+            </div>
+            <button class="dismiss-btn" onclick="dismissAlert(this)">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="alert-card warning">
+            <div class="alert-icon">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="alert-body">
+              <div class="alert-title">
+                Medium Risk Email — Warning Sent to User
+              </div>
+              <div class="alert-desc">
+                Email from <code>deals@promosite.com</code> scored 55. Warning
+                delivered to receiver. Email accessible with caution.
+              </div>
+              <div class="alert-meta">
+                <i class="fa-solid fa-clock"></i> 12 minutes ago &nbsp;|&nbsp;
+                <i class="fa-solid fa-envelope"></i> jane@company.com
+              </div>
+            </div>
+            <button class="dismiss-btn" onclick="dismissAlert(this)">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="alert-card warning">
+            <div class="alert-icon">
+              <i class="fa-solid fa-location-dot"></i>
+            </div>
+            <div class="alert-body">
+              <div class="alert-title">Suspicious Login — bob@company.com</div>
+              <div class="alert-desc">
+                Login from USA detected. Previous location: Mumbai. Time gap: 15
+                hrs. Flagged for review.
+              </div>
+              <div class="alert-meta">
+                <i class="fa-solid fa-clock"></i> 20 minutes ago &nbsp;|&nbsp;
+                <i class="fa-solid fa-location-dot"></i> USA
+              </div>
+            </div>
+            <button class="dismiss-btn" onclick="dismissAlert(this)">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- EMAIL DETAIL MODAL -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <h3>
+            <i class="fa-solid fa-envelope-open"></i> Email Analysis Report
+          </h3>
+          <button class="modal-close" onclick="closeModal()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

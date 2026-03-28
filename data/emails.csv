@@ -1,0 +1,16 @@
+email_id,sender,subject,body,has_link,link_url,label
+1,ceo@legitcompany.com,Q3 Report,Please find the attached Q3 report for review.,0,,safe
+2,hr@legitcompany.com,Team Meeting,Join us for the team meeting tomorrow at 10am.,0,,safe
+3,unknown@fakebank.com,Urgent Account Verification,Your account has been compromised verify now,0,,high
+4,support@paypa1.com,Password Reset Required,Click to reset your password immediately or account will be suspended,0,,high
+5,boss@legitcompany.com,Wire Transfer Request,Please transfer $50000 to the following account urgently,0,,high
+6,newsletter@company.com,Monthly Updates,Here are this months updates from our team,0,,safe
+7,deals@shop.com,Exclusive Offer,Check out our latest deals this week,0,,medium
+8,alerts@fakesite.com,Security Alert,Your account needs attention please verify your details,0,,medium
+9,hr@legitcompany.com,Payroll Update,Your salary has been updated click here to view,1,http://legitcompany.com/payroll,safe
+10,support@paypa1.com,Verify Account,Click here to verify http://malicious-site.com/verify,1,http://malicious-site.com/verify,high
+11,deals@amazon.com,Your Order,Track your order here http://amazon.com/orders,1,http://amazon.com/orders,safe
+12,unknown@phish.com,Bank Alert,Login to secure your account http://fakebank.net/login,1,http://fakebank.net/login,high
+13,promo@legit.com,Weekend Sale,Shop now at http://legit.com/sale,1,http://legit.com/sale,medium
+14,alert@suspicious.com,Unusual Activity,We detected unusual activity verify at http://suspicious-link.net,1,http://suspicious-link.net/verify,high
+15,team@company.com,Project Update,See the latest update http://company.com/project,1,http://company.com/project,safe
