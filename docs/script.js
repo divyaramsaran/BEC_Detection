@@ -1,4 +1,4 @@
-const API = "http://localhost:5000";
+const API = "https://bec-detection.onrender.com";
 
 // ===== NAVIGATION =====
 const navItems = document.querySelectorAll(".nav-item");
