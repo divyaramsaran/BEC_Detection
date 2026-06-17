@@ -1,10 +1,52 @@
 import requests
 import whois
 from datetime import datetime
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 import re
 import urllib3
+import socket
+import ipaddress
+import concurrent.futures
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# ===== SSRF PROTECTION HELPER =====
+def is_private_ip(hostname):
+    """Resolve hostname and check if it belongs to private or loopback ranges."""
+    try:
+        # If it's already an IP address, check directly
+        try:
+            ip = ipaddress.ip_address(hostname)
+            return ip.is_private or ip.is_loopback or ip.is_link_local
+        except ValueError:
+            pass
+
+        # Resolve hostname to IPs
+        addr_info = socket.getaddrinfo(hostname, None)
+        for family, _, _, _, sockaddr in addr_info:
+            ip_str = sockaddr[0]
+            ip = ipaddress.ip_address(ip_str)
+            if ip.is_private or ip.is_loopback or ip.is_link_local:
+                return True
+        return False
+    except Exception:
+        # Treat unresolved hostnames as unsafe
+        return True
+
+
+# ===== SAFE WHOIS QUERY WITH TIMEOUT =====
+def get_whois_data(domain):
+    """Execute whois query in a thread pool with a timeout to prevent hanging."""
+    if not re.match(r'^[a-zA-Z0-9.-]+$', domain):
+        return None
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(whois.whois, domain)
+        try:
+            return future.result(timeout=4)
+        except Exception:
+            return None
+
+
 # ===== SUSPICIOUS KEYWORDS IN URL =====
 SUSPICIOUS_KEYWORDS = [
     'verify', 'login', 'secure', 'account', 'update', 'confirm',
@@ -20,20 +62,11 @@ MALICIOUS_DOMAINS = [
  
 def get_domain_age_days(domain):
     """Returns domain age in days using multiple methods."""
-    # Method 1 — WHOIS
-    try:
-        import socket
-        socket.setdefaulttimeout(3)
-        w = whois.whois(domain)
-        creation_date = w.creation_date
-        if isinstance(creation_date, list):
-            creation_date = creation_date[0]
-        if creation_date and isinstance(creation_date, datetime):
-            return (datetime.now() - creation_date).days
-    except Exception:
-        pass
+    # Sanitize domain
+    if not re.match(r'^[a-zA-Z0-9.-]+$', domain):
+        return -1
 
-    # Method 2 — Check via RDAP (faster than WHOIS)
+    # Method 1 — Check via RDAP (faster than WHOIS, try first)
     try:
         rdap_url = f"https://rdap.org/domain/{domain}"
         resp = requests.get(rdap_url, timeout=3)
@@ -43,7 +76,23 @@ def get_domain_age_days(domain):
                 if event.get('eventAction') == 'registration':
                     date_str = event.get('eventDate', '')
                     creation = datetime.fromisoformat(date_str[:10])
-                    return (datetime.now() - creation).days
+                    age = (datetime.now() - creation).days
+                    return max(0, age)
+    except Exception:
+        pass
+
+    # Method 2 — WHOIS with timeout wrapper (slower fallback)
+    try:
+        w = get_whois_data(domain)
+        if w:
+            creation_date = w.creation_date
+            if isinstance(creation_date, list):
+                creation_date = creation_date[0]
+            if creation_date and isinstance(creation_date, datetime):
+                if creation_date.tzinfo is not None:
+                    creation_date = creation_date.replace(tzinfo=None)
+                age = (datetime.now() - creation_date).days
+                return max(0, age)
     except Exception:
         pass
 
@@ -62,28 +111,43 @@ def get_domain_age_days(domain):
  
  
 def check_redirects(url):
-    """Follow redirects and return count + final URL."""
+    """Follow redirects and return count + final URL, with SSRF protection."""
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
-        response = requests.get(
-            url, 
-            timeout=6, 
-            allow_redirects=True,
-            headers=headers,
-            verify=False  # skip SSL errors
-        )
-        redirect_count = len(response.history)
-        return redirect_count, response.url
-    except requests.exceptions.SSLError:
-        return 0, url
-    except requests.exceptions.ConnectionError:
-        return 0, url   # treat as 0 redirects — don't penalize
-    except requests.exceptions.Timeout:
-        return 0, url
+        curr_url = url
+        redirect_count = 0
+        max_redirects = 5
+
+        while redirect_count <= max_redirects:
+            parsed = urlparse(curr_url)
+            domain = parsed.netloc.split(':')[0]
+            if not domain or is_private_ip(domain):
+                return -1, url
+
+            response = requests.get(
+                curr_url, 
+                timeout=4, 
+                allow_redirects=False,
+                headers=headers,
+                verify=False
+            )
+            if response.status_code in (301, 302, 303, 307, 308):
+                location = response.headers.get('Location')
+                if not location:
+                    break
+                if not location.startswith('http'):
+                    curr_url = urljoin(curr_url, location)
+                else:
+                    curr_url = location
+                redirect_count += 1
+            else:
+                break
+        
+        return redirect_count, curr_url
     except Exception:
-        return 0, url
+        return -1, url
  
  
 def check_suspicious_keywords(url):

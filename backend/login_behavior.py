@@ -116,9 +116,18 @@ def train_model(csv_path=None):
     """Train Isolation Forest on login logs dataset."""
     df = pd.read_csv(csv_path)
  
+    # Sort logs by user and time to group logins correctly for feature extraction
+    df = df.sort_values(by=['user_email', 'login_time']).reset_index(drop=True)
+
     feature_rows = []
     for i, row in df.iterrows():
-        prev_row = df.iloc[i - 1].to_dict() if i > 0 else None
+        # Find the actual previous row for the same user
+        prev_row = None
+        if i > 0:
+            potential_prev = df.iloc[i - 1].to_dict()
+            if potential_prev.get('user_email') == row.get('user_email'):
+                prev_row = potential_prev
+        
         curr = row.to_dict()
         feats = extract_features(curr, prev_row)
         feature_rows.append(feats)

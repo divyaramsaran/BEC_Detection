@@ -1,4 +1,18 @@
-const API = "http://localhost:5000";
+// Detect API URL: use localhost for local development, or relative paths for production deployment
+const API = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5000"
+  : "";
+
+// ===== HTML ESCAPING FOR SECURITY =====
+function escapeHTML(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 // ===== NAVIGATION =====
 const navItems = document.querySelectorAll(".nav-item");
@@ -116,16 +130,16 @@ function openEmailModal(sender, subject, body, hasLink, score, risk) {
         : '<span style="color:var(--success);font-weight:600;"><i class="fa-solid fa-check-circle"></i> Delivered to Inbox</span>';
 
   mb.innerHTML = `
-    <div class="modal-row"><span class="modal-label">From</span><span class="modal-val"><code style="font-family:'DM Mono',monospace;color:var(--info)">${sender}</code></span></div>
-    <div class="modal-row"><span class="modal-label">Subject</span><span class="modal-val">${subject}</span></div>
-    <div class="modal-row"><span class="modal-label">Has Link</span><span class="modal-val">${hasLink}</span></div>
+    <div class="modal-row"><span class="modal-label">From</span><span class="modal-val"><code style="font-family:'DM Mono',monospace;color:var(--info)">${escapeHTML(sender)}</code></span></div>
+    <div class="modal-row"><span class="modal-label">Subject</span><span class="modal-val">${escapeHTML(subject)}</span></div>
+    <div class="modal-row"><span class="modal-label">Has Link</span><span class="modal-val">${escapeHTML(hasLink)}</span></div>
     <div class="modal-row"><span class="modal-label">Risk Score</span>
-      <span class="modal-val" style="color:${riskColor};font-family:'DM Mono',monospace;font-weight:600;">${score}/100</span>
+      <span class="modal-val" style="color:${riskColor};font-family:'DM Mono',monospace;font-weight:600;">${escapeHTML(score)}/100</span>
     </div>
     <div class="modal-row"><span class="modal-label">Classification</span>
-      <span class="modal-val"><span class="badge ${risk.toLowerCase()}">${risk} Risk</span></span>
+      <span class="modal-val"><span class="badge ${escapeHTML(risk.toLowerCase())}">${escapeHTML(risk)} Risk</span></span>
     </div>
-    <div class="modal-body-text">${body}</div>
+    <div class="modal-body-text">${escapeHTML(body)}</div>
     <div class="modal-row"><span class="modal-label">System Action</span><span class="modal-val">${action}</span></div>
     <div style="margin-top:16px;padding:12px;background:var(--bg3);border-radius:8px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;">
       <i class="fa-solid fa-shield-halved" style="color:var(--info)"></i>&nbsp;
@@ -348,28 +362,31 @@ async function analyzeEmailFull(emailData, loginData = null) {
     newRow.dataset.risk = data.verdict;
     newRow.style.opacity = "0";
     newRow.innerHTML = `
-      <td><code>${emailData.sender}</code></td>
-      <td>${emailData.subject}</td>
+      <td><code>${escapeHTML(emailData.sender)}</code></td>
+      <td>${escapeHTML(emailData.subject)}</td>
       <td><span class="tag ${emailData.has_link ? "yes" : "no"}">${emailData.has_link ? "Yes" : "No"}</span></td>
       <td>
         <div class="score-bar">
-          <div class="score-fill ${data.verdict}" style="width:${data.final_score}%"></div>
+          <div class="score-fill ${escapeHTML(data.verdict)}" style="width:${data.final_score}%"></div>
           <span>${data.final_score}</span>
         </div>
       </td>
-      <td><span class="badge ${data.verdict}">${data.verdict.charAt(0).toUpperCase() + data.verdict.slice(1)} Risk</span></td>
+      <td><span class="badge ${escapeHTML(data.verdict)}">${escapeHTML(data.verdict.charAt(0).toUpperCase() + data.verdict.slice(1))} Risk</span></td>
       <td>
-        <button class="action-btn view"
-          onclick="openEmailModal(
-            '${emailData.sender.replace(/'/g, "\\'")}',
-            '${emailData.subject.replace(/'/g, "\\'")}',
-            '${(data.reasons || []).join(", ").replace(/'/g, "\\'").replace(/"/g, '\\"')}',
-            '${emailData.has_link ? "Yes" : "No"}',
-            '${data.final_score}',
-            '${data.verdict ? data.verdict.charAt(0).toUpperCase() + data.verdict.slice(1) : "Unknown"}'
-          )">View</button>
+        <button class="action-btn view">View</button>
       </td>
     `;
+    const viewBtn = newRow.querySelector(".view");
+    viewBtn.addEventListener("click", () => {
+      openEmailModal(
+        emailData.sender,
+        emailData.subject,
+        (data.reasons || []).join(", "),
+        emailData.has_link ? "Yes" : "No",
+        data.final_score,
+        data.verdict ? data.verdict.charAt(0).toUpperCase() + data.verdict.slice(1) : "Unknown"
+      );
+    });
     tbody.prepend(newRow);
     setTimeout(() => {
       newRow.style.transition = "opacity 0.4s";
@@ -377,7 +394,7 @@ async function analyzeEmailFull(emailData, loginData = null) {
     }, 50);
 
     // --- Live feed ---
-    const feedMsg = `Email from <code>${emailData.sender}</code>`;
+    const feedMsg = `Email from <code>${escapeHTML(emailData.sender)}</code>`;
     const feedBadge =
       data.verdict === "high"
         ? "Quarantined"
@@ -387,7 +404,7 @@ async function analyzeEmailFull(emailData, loginData = null) {
     addToFeed(
       v.feedType,
       v.icon,
-      `${data.verdict.toUpperCase()} RISK`,
+      `${escapeHTML(data.verdict.toUpperCase())} RISK`,
       feedMsg,
       feedBadge,
     );
@@ -398,16 +415,16 @@ async function analyzeEmailFull(emailData, loginData = null) {
         "high",
         "fa-skull-crossbones",
         "Email Quarantined — HIGH RISK",
-        `Email from <code>${emailData.sender}</code> scored ${data.final_score}. Quarantined. Admin notified.`,
-        `<i class="fa-solid fa-envelope"></i> ${emailData.sender}`,
+        `Email from <code>${escapeHTML(emailData.sender)}</code> scored ${data.final_score}. Quarantined. Admin notified.`,
+        `<i class="fa-solid fa-envelope"></i> ${escapeHTML(emailData.sender)}`,
       );
     } else if (data.verdict === "medium") {
       addAlertCard(
         "warning",
         "fa-triangle-exclamation",
         "Medium Risk Email — Warning Sent",
-        `Email from <code>${emailData.sender}</code> scored ${data.final_score}. User warned.`,
-        `<i class="fa-solid fa-envelope"></i> ${emailData.sender}`,
+        `Email from <code>${escapeHTML(emailData.sender)}</code> scored ${data.final_score}. User warned.`,
+        `<i class="fa-solid fa-envelope"></i> ${escapeHTML(emailData.sender)}`,
       );
     }
 
@@ -441,11 +458,11 @@ async function analyzeLogin(logEntry, previousEntry = null) {
         item.innerHTML = `
           <div class="anomaly-icon"><i class="fa-solid fa-location-dot"></i></div>
           <div class="anomaly-info">
-            <strong>${data.user}</strong>
-            <span>${data.location} — Score: ${data.risk_score}</span>
+            <strong>${escapeHTML(data.user)}</strong>
+            <span>${escapeHTML(data.location)} — Score: ${data.risk_score}</span>
             <div class="anomaly-meta">
-              <span><i class="fa-solid fa-clock"></i> ${data.login_time}</span>
-              <span><i class="fa-solid fa-desktop"></i> ${data.device}</span>
+              <span><i class="fa-solid fa-clock"></i> ${escapeHTML(data.login_time)}</span>
+              <span><i class="fa-solid fa-desktop"></i> ${escapeHTML(data.device)}</span>
             </div>
           </div>
           <span class="badge ${data.verdict === "anomaly" ? "high" : "warning"}">
@@ -464,7 +481,7 @@ async function analyzeLogin(logEntry, previousEntry = null) {
         "warning",
         "fa-user-slash",
         "LOGIN ANOMALY",
-        `<code>${data.user}</code> logged in from ${data.location}`,
+        `<code>${escapeHTML(data.user)}</code> logged in from ${escapeHTML(data.location)}`,
         "Alert Sent",
       );
 
@@ -473,8 +490,8 @@ async function analyzeLogin(logEntry, previousEntry = null) {
         "high",
         "fa-user-slash",
         "Login Anomaly Detected",
-        `<code>${data.user}</code> login from ${data.location}. Risk Score: ${data.risk_score}. ${data.action}`,
-        `<i class="fa-solid fa-location-dot"></i> ${data.location}`,
+        `<code>${escapeHTML(data.user)}</code> login from ${escapeHTML(data.location)}. Risk Score: ${data.risk_score}. ${escapeHTML(data.action)}`,
+        `<i class="fa-solid fa-location-dot"></i> ${escapeHTML(data.location)}`,
       );
     }
 
@@ -576,4 +593,31 @@ window.addEventListener("load", () => {
       },
     );
   }, 15000);
+});
+
+// ===== MOBILE MENU TOGGLE =====
+document.addEventListener("DOMContentLoaded", () => {
+  const menuToggle = document.getElementById("menu-toggle");
+  const sidebar = document.querySelector(".sidebar");
+
+  if (menuToggle && sidebar) {
+    menuToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle("open");
+    });
+
+    // Close sidebar when clicking a nav item on mobile
+    document.querySelectorAll(".nav-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+      });
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener("click", (e) => {
+      if (!sidebar.contains(e.target) && !menuToggle.contains(e.target) && sidebar.classList.contains("open")) {
+        sidebar.classList.remove("open");
+      }
+    });
+  }
 });
