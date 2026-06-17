@@ -19,17 +19,29 @@ def normalize_score(score, max_val=100):
     return max(0, min(int(score), 100))
  
  
-def compute_risk_score(email_score=0, sandbox_score=0, login_score=0):
+def compute_risk_score(email_score=0, sandbox_score=0, login_score=0, has_sandbox=False, has_login=False):
     """
-    Weighted combination of all 3 module scores.
+    Weighted combination of active module scores.
     Returns final risk score (0-100).
     """
+    active_weights = {
+        'email_keywords': WEIGHTS['email_keywords']
+    }
+    if has_sandbox:
+        active_weights['sandbox_result'] = WEIGHTS['sandbox_result']
+    if has_login:
+        active_weights['login_behavior'] = WEIGHTS['login_behavior']
+
     weighted = (
-        email_score   * WEIGHTS['email_keywords'] +
-        sandbox_score * WEIGHTS['sandbox_result'] +
-        login_score   * WEIGHTS['login_behavior']
+        email_score * active_weights.get('email_keywords', 0) +
+        (sandbox_score * active_weights.get('sandbox_result', 0) if has_sandbox else 0) +
+        (login_score * active_weights.get('login_behavior', 0) if has_login else 0)
     )
-    return normalize_score(weighted)
+    
+    total_weight = sum(active_weights.values())
+    if total_weight > 0:
+        return normalize_score(weighted / total_weight)
+    return 0
  
  
 def determine_verdict(score):
@@ -84,7 +96,9 @@ def run_risk_engine(email_data, login_data=None):
     # ===== STEP 2: Sandbox Analysis (if link present) =====
     sandbox_score  = 0
     sandbox_result = None
+    has_sandbox = False
     if email_data.get('has_link') and email_data.get('link_url'):
+        has_sandbox = True
         sandbox_result = analyze_url(email_data['link_url'])
         raw_sandbox    = sandbox_result.get('threat_score', 0)
         sandbox_score  = normalize_score(raw_sandbox)
@@ -103,7 +117,9 @@ def run_risk_engine(email_data, login_data=None):
     # ===== STEP 3: Login Behavior Analysis =====
     login_score  = 0
     login_result = None
+    has_login = False
     if login_data:
+        has_login = True
         login_result = analyze_login(
             login_data.get('log_entry'),
             login_data.get('previous_entry')
@@ -119,7 +135,7 @@ def run_risk_engine(email_data, login_data=None):
         breakdown['login'] = {'score': 0, 'verdict': 'not_checked'}
  
     # ===== STEP 4: Compute Final Score =====
-    final_score  = compute_risk_score(email_score, sandbox_score, login_score)
+    final_score  = compute_risk_score(email_score, sandbox_score, login_score, has_sandbox=has_sandbox, has_login=has_login)
  
     # If any single module is critical — escalate
     if sandbox_score >= 80 or login_score >= 70:

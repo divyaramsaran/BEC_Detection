@@ -7,16 +7,23 @@ from risk_engine import run_risk_engine
 import os
  
 app = Flask(__name__)
-CORS(app)
+allowed_origins = os.environ.get("ALLOWED_ORIGINS", "*")
+if allowed_origins != "*":
+    allowed_origins = allowed_origins.split(",")
+CORS(app, origins=allowed_origins)
  
 # ===== TRAIN MODELS ON STARTUP =====
-if not os.path.exists('models/login_model.pkl'):
+base_dir = os.path.dirname(os.path.abspath(__file__))
+login_model_path = os.path.join(base_dir, '..', 'models', 'login_model.pkl')
+email_model_path = os.path.join(base_dir, '..', 'models', 'email_model.pkl')
+
+if not os.path.exists(login_model_path):
     try:
         train_model()
     except Exception as e:
         print(f"Login model training skipped: {e}")
  
-if not os.path.exists('models/email_model.pkl'):
+if not os.path.exists(email_model_path):
     try:
         train_email_model()
     except Exception as e:
