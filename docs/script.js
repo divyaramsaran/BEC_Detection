@@ -8,6 +8,22 @@ const navItems = document.querySelectorAll(".nav-item");
 const sections = document.querySelectorAll(".section");
 const pageTitle = document.getElementById("page-title");
 const pageSub = document.getElementById("page-sub");
+const menuToggle = document.getElementById("menu-toggle");
+const sidebar = document.querySelector(".sidebar");
+
+if (menuToggle && sidebar) {
+  menuToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    sidebar.classList.toggle("open");
+  });
+
+  // Close sidebar when clicking outside
+  document.addEventListener("click", (e) => {
+    if (sidebar.classList.contains("open") && !sidebar.contains(e.target) && e.target !== menuToggle) {
+      sidebar.classList.remove("open");
+    }
+  });
+}
 
 const pageMeta = {
   dashboard: {
@@ -42,6 +58,11 @@ navItems.forEach((item) => {
     document.getElementById(`section-${target}`).classList.add("active");
     pageTitle.textContent = pageMeta[target].title;
     pageSub.textContent = pageMeta[target].sub;
+
+    // Close sidebar on mobile after navigation
+    if (sidebar && sidebar.classList.contains("open")) {
+      sidebar.classList.remove("open");
+    }
   });
 });
 
